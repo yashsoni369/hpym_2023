@@ -1,0 +1,244 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand">
+        <img src="../../assets/img/hariprabodham_no_bg.png" alt="Logo" width="30" height="24"
+            class="d-inline-block align-text-top">
+        HariPrabodham Yuva Mohatsav 2023
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" routerLink="/home" routerLinkActive="active">
+                    Home
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" routerLink="/register" routerLinkActive="active">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" routerLink="/admin" routerLinkActive="active">Admin</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<section class="h-100" style="background-color: #f0c77c;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col">
+                <div class="card card-registration my-4">
+                    <div class="row g-0">
+                        <div class="align-self-md-center col-xl-6 d-flex d-xl-block">
+                            <img src="../../assets/img/hariprabodham_no_bg.png" alt="Sample photo" class="img-fluid"
+                                style="border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" />
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card-body p-md-5 text-black">
+                                <form [formGroup]="formModel" (submit)="onSubmit(registerModal,content)">
+                                    <h3 class="mb-5 text-uppercase">Samaya Registeration</h3>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1m">First Name</label>
+                                                <input type="text" id="form3Example1m" class="form-control"
+                                                    id="firstName" formControlName="firstName"
+                                                    placeholder="Enter your first name" />
+                                                <span class="errorMsg"
+                                                    *ngIf="firstName && firstName.invalid && firstName.touched">*Please
+                                                    enter First
+                                                    Name</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1m">Middle Name</label>
+                                                <input type="text" id="form3Example1m" class="form-control" id="name"
+                                                    formControlName="middleName" placeholder="Enter your last name" />
+                                                <span class="errorMsg"
+                                                    *ngIf="middleName && middleName.invalid && middleName.touched">*Please
+                                                    enter Middle
+                                                    Name</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1m">Last Name</label>
+                                                <input type="text" id="form3Example1m" class="form-control" id="name"
+                                                    formControlName="lastName" placeholder="Enter your last name" />
+                                                <span class="errorMsg"
+                                                    *ngIf="lastName && lastName.invalid && lastName.touched">*Please
+                                                    enter Last
+                                                    Name</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1n">Mobile No</label>
+                                                <input type="text" id="form3Example1n" id="phone"
+                                                    formControlName="phone" placeholder="Enter your Phone No."
+                                                    class="form-control" />
+                                                <span class="errorMsg"
+                                                    *ngIf="phone && phone.invalid && phone.touched">*Please enter valid
+                                                    Phone No.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="gender">Gender</label>
+                                               
+                                                <select class="form-select" id="gender" formControlName="gender">
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                </select>
+                                                <span class="errorMsg"
+                                                    *ngIf="email && email.invalid && email.touched">*Please enter valid
+                                                    Email</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="Transport">Travel Option</label>
+                                               
+                                                <select class="form-select" id="Transport" formControlName="transport">
+                                                    <option value="Bus">Bus (Mandal)</option>
+                                                    <option value="Self">Self</option>
+                                                </select>
+                                                <span class="errorMsg"
+                                                    *ngIf="email && email.invalid && email.touched">*Please enter valid
+                                                    Email</span>
+                                                <!-- <input type="text" id="form3Example1n1" class="form-control form-control-lg" /> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1m">Reference Name</label>
+                                                <input type="text" id="form3Example1m" class="form-control"
+                                                    id="firstName" formControlName="firstName"
+                                                    placeholder="Enter your first name" />
+                                                <span class="errorMsg"
+                                                    *ngIf="firstName && firstName.invalid && firstName.touched">*Please
+                                                    enter First
+                                                    Name</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1m">Sabha</label>
+                                                <input type="text" id="form3Example1m" class="form-control" id="name"
+                                                    formControlName="middleName" placeholder="Enter your last name" />
+                                                <span class="errorMsg"
+                                                    *ngIf="middleName && middleName.invalid && middleName.touched">*Please
+                                                    enter Middle
+                                                    Name</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end pt-3">
+                                        <button type="button" class="btn btn-light btn-lg mr-2" (click)="reset()">Reset
+                                            all</button>
+                                        <button type="submit" class="btn btn-warning btn-lg">Submit form</button>
+                                    </div>
+                                </form>
+                                <div class="alert alert-info mt-2" role="alert">
+                                    For more details, contact us at: <a href="tel:+917208899993">7208899993 !</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="col-lg-12">
+    <ng-template #content let-modal>
+        <div class="modal-body">
+            <p>{{message}}</p>
+            <button type="button" class="close" #closeBtn aria-label="Close" (click)="modal.dismiss('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </ng-template>
+</div>
+
+<ng-template #registerModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Registration Done Successfully</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body" #entry_pass id="entry_pass">
+        <!-- <p id="screenshot_msg">
+			Please take <b>SCREENSHOT</b> of your entry pass
+		</p> -->
+
+        <a style="color: black;font-size: x-large;font-weight: bold;display: block;text-align: center;"
+            class="text-black">
+            <img src="../assets/img/ssl_no_bg.png" alt="Logo" width="30" height="24" class="align-text-top"> Suhradham
+            Sports League
+        </a>
+        <h5 class="text-center player_id">SSL Player ID : <span id="player_ssl_id">{{ssData.sslId}}</span></h5>
+        <h4 class="text-center player_name" id="player_name">{{ssData.firstName}} {{ssData.lastName}}</h4>
+        <!-- <h4 class="text-center player_name" id="player_name">{{ssData.sabha}}</h4> -->
+        <div class="player_block">
+            <h4>{{ssData.sabha}}</h4>
+        </div>
+        <div class="d-flex justify-content-center"
+            style="border: #d8514e 27px solid;border-top-width: 0; border-bottom-width: 0;">
+            <qr-code
+                value="{{ssData.sslId}}::{{ssData.mobileNo}}:::::{{ssData.firstName}}::{{ssData.lastName}}::{{ssData.emailId}}::{{ssData.sabha}}::{{ssData.memberType}}"
+                size="200" errorCorrectionLevel="Q" centerImageSrc="./assets/img/SSL.jpg" centerImageSize="45">
+            </qr-code>
+        </div>
+        <div class="player_block">
+            <h4>{{ssData.memberType}}</h4>
+        </div>
+
+
+        <!-- <img src="../../../assets/img/SSL.jpg" style="width: -webkit-fill-available;"/> -->
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-block btn-lg btn-outline-info" (click)="captureScreenshot()">
+            <i class="fa fa-camera"></i>
+            Take Screenshot</button>
+    </div>
+</ng-template>
+
+<!-- HPYM CODE -->
+<div class="modal fade" id="autoCompleteModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="autoCompleteModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="autoCompleteModal">Initial Details</h5>
+                <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+            </div>
+            <div class="modal-body">
+                <p>Please provide your <b>Mobile Number OR Name</b> if you are already Suharadam Member (Have attended any sabha atleast one time)</p>
+                <form>
+                    <div class="mb-3">
+                        <label for="mobile-no" class="col-form-label">Mobile No:</label>
+                        <input type="text" class="form-control" id="mobile-no">
+                      </div>
+                      <hr>
+                      <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                      </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">New Member</button>
+            </div>
+        </div>
+    </div>
+</div>
