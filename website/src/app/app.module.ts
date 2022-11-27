@@ -7,6 +7,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
 
+// Ext Modules
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { GuiGridModule } from '@generic-ui/ngx-grid';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -17,7 +21,9 @@ import { RegisterComponent } from './register/register.component';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    AutocompleteLibModule,
+    GuiGridModule
   ],
   providers: [],
   bootstrap: [AppComponent]

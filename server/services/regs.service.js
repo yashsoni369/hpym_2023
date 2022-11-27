@@ -10,7 +10,21 @@ regsService.mobileAutofill = async (req, res) => {
     try {
         var mob = req.query.mobileNo;
         if (mob && mob.length >= 3 && mob.length <= 10) {
-            var predictions = await reg.find({ "Mobile": new RegExp('.*' + mob + '.*') }, { 'Full Name': 1, 'Mobile': 1 });
+            var predictions = await samparkSchema.find({ "Mobile": new RegExp('.*' + mob + '.*') }, { 'Full Name': 1, 'Mobile': 1 });
+            return { statusCode: 200, message: 'Mobile autofill', data: predictions, res }
+        }
+        return { statusCode: 404, message: 'No Data found', data: '', res }
+    } catch (e) {
+        return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
+
+    }
+}
+
+regsService.nameAutoFill = async (req, res) => {
+    try {
+        var name = req.query.name;
+        if (name && name.length >= 3) {
+            var predictions = await samparkSchema.find({ 'Full Name': { $regex: name.toLowerCase(), "$options": "i" } }, { 'Full Name': 1, 'Mobile': 1, 'Sabha': 1 });
             return { statusCode: 200, message: 'Mobile autofill', data: predictions, res }
         }
         return { statusCode: 404, message: 'No Data found', data: '', res }
@@ -24,10 +38,11 @@ regsService.formDataFromMobile = async (req, res) => {
     try {
         var mob = req.query.mobileNo;
         if (mob && mob.length == 10) {
-            if (alreadyRegistered() != 0) {
+            const id = await alreadyRegistered(req.body.Mobile);
+            if (id != 0) {
                 return { statusCode: 400, message: 'Member already Registered', data: '', res }
             }
-            var member = await reg.find({ "Mobile": mob }, { 'Full Name': 1, 'Mobile': 1, 'Ref Name': 1, 'FollowUp Name': 1, 'Gender': 1, 'Sabha': 1, 'Email': 1, 'Attending Sabha': 1 });
+            var member = await samparkSchema.find({ "Mobile": mob }, { 'First Name': 1,'Middle Name': 1,'Last Name': 1, 'Mobile': 1, 'Ref Name': 1, 'FollowUp Name': 1, 'Gender': 1, 'Sabha': 1, 'Email': 1, 'Attending Sabha': 1 });
             return { statusCode: 200, message: 'Full Details', data: member, res }
         }
         return { statusCode: 404, message: 'No Data found', data: '', res }
@@ -55,6 +70,7 @@ regsService.register = async (req, res) => {
             }
         }
         else {
+            logger.info('Member Already Registered');
             return { statusCode: 400, message: 'Member already Registered', data: '', res }
         }
     } catch (e) {
@@ -89,8 +105,11 @@ const registerMember = async (data, samparkId) => {
 const alreadyRegistered = async (mobileNo) => {
     try {
         var samparkData = await samparkSchema.findOne({ Mobile: mobileNo }, { id: 1 });
-        if(samparkData) {
-            var player = await registerationModel.findOne({samparkId:mongoose.Types.ObjectId(samparkData.id)}, { id: 1 });
+        if (samparkData) {
+            console.log(samparkData);
+
+            var player = await registerationModel.findOne({ samparkId: mongoose.Types.ObjectId(samparkData.id) }, { id: 1 });
+            console.log(player);
             if (player != null) {
                 return player.id;
             }
@@ -103,6 +122,55 @@ const alreadyRegistered = async (mobileNo) => {
         return 0;
     }
 }
+
+// Admin
+
+regsService.getAll = async (req, res) => {
+    try {
+        var regs = await registerationModel.aggregate(
+            [
+                {
+                  '$lookup': {
+                    'from': 'samparks', 
+                    'localField': 'samparkId', 
+                    'foreignField': '_id', 
+                    'as': 'sampark'
+                  }
+                }, {
+                  '$unwind': {
+                    'path': '$sampark'
+                  }
+                }, {
+                  '$project': {
+                    'transport': 1, 
+                    'isNew': 1, 
+                    'seva': 1, 
+                    'sampark.First Name': 1, 
+                    'sampark.Middle Name': 1, 
+                    'sampark.Last Name': 1, 
+                    'sampark.Ref Name': 1, 
+                    'sampark.Sabha': 1, 
+                    'sampark.Attending Sabha': 1, 
+                    'sampark.Mobile': 1, 
+                    'sampark.FollowUp Name': 1, 
+                    'sampark.Gender': 1, 
+                    'sampark.Email': 1, 
+                    'sampark.% Present': 1, 
+                    'sampark.Joining Date': 1
+                  }
+                }
+              ]
+        ).sort({ createdAt: 1 }).exec()
+        var totalRecords = await registerationModel.countDocuments({});
+        return { statusCode: 200, message: 'Registerations List', data: { regs, totalRecords }, res }
+    } catch (e) {
+        return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
+    }
+}
+
+// .sort({ createdAt: -1 })
+//             .skip(req.params.skip)
+//             .limit(req.params.take).exec();
 
 const excelToDB = () => {
     var xlsx = require('node-xlsx');

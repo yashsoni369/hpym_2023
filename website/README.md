@@ -1,27 +1,53 @@
-# Website
+Readme
+Server Name : prabodham36369
+Pass : Prabodham36
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.
+DB name : SSL_2022_PROD
+mongodb+srv://prabodham36369:Prabodham36@prabodham.owbqxe4.mongodb.net/?retryWrites=true&w=majority
 
-## Development server
+docker build -t yashsoni2737/ssl_service:latest .
+docker push yashsoni2737/ssl_service:latest
+docker rm -f ssl_service
+docker pull yashsoni2737/ssl_service:latest
+docker run -itd -p 3000:3000 --restart=always --name=ssl_service yashsoni2737/ssl_service:latest
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+docker build -t yashsoni2737/ssl_website:latest .
+docker push yashsoni2737/ssl_website:latest
+docker rm -f ssl_website
+docker pull yashsoni2737/ssl_website:latest
+docker run -itd -p 80:80 --restart=always --name=ssl_website yashsoni2737/ssl_website:latest
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+for new yuvaks for registeration
+pick sabha area from reference name
 
-## Build
+Extra fields for Mohatsav
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+registered : Yes / No
 
-## Running unit tests
+Transport : Bus / Self
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Seva (if bus) : 1000 (amount)
+0 if not paid
+is new
 
-## Running end-to-end tests
+If New 
+First
+Middle
+Last
+MobileNo
+Gender
+Reference**
+Sabha
+Transport
+In Groups -> NEW
+-> Registeration Successful! Please contact your Reference : Dipesh Bhai : 9212323333 -> Click to whatsapp
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+If Existing pull from Sampark
+First
+Middle
+Last
+MobileNo
+Gender
+Sabha
+Transport

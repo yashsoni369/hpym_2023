@@ -8,6 +8,11 @@ regsController.mobileAutofill = async (req, res) => {
     responseHelper.sendResponse(response)
 }
 
+regsController.nameAutofill = async (req, res) => {
+    var response = await regsService.nameAutoFill(req, res);
+    responseHelper.sendResponse(response)
+}
+
 regsController.formDataFromMobile = async (req, res) => {
     var response = await regsService.formDataFromMobile(req, res);
     responseHelper.sendResponse(response)
@@ -15,6 +20,11 @@ regsController.formDataFromMobile = async (req, res) => {
 
 regsController.register = async (req, res) => {
     var response = await regsService.register(req, res);
+    responseHelper.sendResponse(response)
+}
+
+regsController.getAll = async (req, res) => {
+    var response = await regsService.getAll(req, res);
     responseHelper.sendResponse(response)
 }
 
