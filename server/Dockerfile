@@ -21,5 +21,8 @@ COPY . .
 EXPOSE 3001
 
 ENV NODE_ENV PROD
+ENV DB_SERVER=mongo_db
+ENV DB_USER=root
+ENV DB_PASS=root
 # ENTRYPOINT [ "node", "-r", "dotenv/config server.js" ]
 CMD [ "node", "server.js" ]

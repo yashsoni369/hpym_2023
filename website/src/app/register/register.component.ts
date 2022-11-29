@@ -1,8 +1,9 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Validators, FormBuilder } from '@angular/forms';
 import { interval } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { RegisterationService } from '../services/registeration.service';
+import { NgxCaptureService } from 'ngx-capture';
 declare var bootstrap: any;
 
 @Component({
@@ -23,9 +24,9 @@ export class RegisterComponent implements OnInit {
     lastName: ['', Validators.required],
     phone: ['', [Validators.required, Validators.minLength(10), Validators.pattern(this.pattern)]],
     gender: ['Male', Validators.required],
+    dob: ['', Validators.required],
     transport: ['Bus', Validators.required],
     sabha: [null, Validators.required],
-    reference: [null],
     isNew: [false, Validators.required],
     samparkId: [null],
   });
@@ -40,11 +41,13 @@ export class RegisterComponent implements OnInit {
   errorMsg = '';
   referenceDetails = {};
   timeLeft$;
-
-  @ViewChild('refAutoSelector') refAutoSelector;
+  sabhaList = [];
+  successData = {};
+  @ViewChild('mobAutoSelector') refAutoSelector;
 
   constructor(private fb: FormBuilder,
-    private service: RegisterationService
+    private service: RegisterationService,
+    private captureService: NgxCaptureService
   ) {
     this.timeLeft$ = interval(1000).pipe(
       map(x => this.calcDateDiff()),
@@ -54,9 +57,30 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     // setTimeout(() => {
-    this.numberModal = new bootstrap.Modal(document.getElementById('autoCompleteModal'), {});
-    this.numberModal.show();
+    // this.numberModal = new bootstrap.Modal(document.getElementById('autoCompleteModal'), {});
+    // this.numberModal.show();
 
+    // var m = new bootstrap.Modal(document.getElementById('successModal'), {});
+    //       m.show();
+    this.getSabhaList();
+    // var m = new bootstrap.Modal(document.getElementById('successModal'), {});
+    // m.show();
+
+  }
+
+  getSabhaList() {
+    this.service.getSabhaList(this.formModel.get('gender').value || 'Male').subscribe(
+      (res: any) => {
+        this.sabhaList = res.data;
+      },
+      err => {
+
+      }
+    )
+  }
+
+  onGenderChange(e) {
+    this.getSabhaList();
   }
 
   get firstName() {
@@ -74,6 +98,9 @@ export class RegisterComponent implements OnInit {
   get sabha() {
     return this.formModel.get('sabha');
   }
+  get dob() {
+    return this.formModel.get('dob');
+  }
   get isNew() {
     return this.formModel.get('isNew');
   }
@@ -81,11 +108,24 @@ export class RegisterComponent implements OnInit {
     return this.formModel.get('reference');
   }
 
+  convertDate(inputD) {
+    var d = new Date(inputD);
 
+    const yyyy = d.getFullYear();
+    let mm = d.getMonth() + 1; // Months start at 0!
+    let dd = d.getDate();
 
+    if (dd < 10) { dd = Number.parseInt('0' + dd); }
+    if (mm < 10) { mm = Number.parseInt('0' + mm); }
+
+    return dd + '-' + mm + '-' + yyyy;
+  }
 
   onSubmit() {
+
     if (this.formModel.valid) {
+      console.log();
+
       // console.log(this.formModel.value);
       var formValue = this.formModel.value;
       var formBody = {};
@@ -95,10 +135,10 @@ export class RegisterComponent implements OnInit {
       formBody['Last Name'] = formValue.lastName
       formBody['Gender'] = formValue.gender
       formBody['transport'] = formValue.transport
-      formBody['Ref Name'] = formValue.reference
       formBody['Sabha'] = this.formModel.get('sabha').value
       formBody['isNew'] = formValue.isNew
       formBody['samparkId'] = formValue.samparkId
+      formBody['Birth Date'] = formValue.dob.split('-').reverse().join('-');
 
       console.log(formBody);
 
@@ -106,6 +146,7 @@ export class RegisterComponent implements OnInit {
         (res: any) => {
           var m = new bootstrap.Modal(document.getElementById('successModal'), {});
           m.show();
+          this.successData = formBody;
           // this.reset();
 
         }, err => {
@@ -124,18 +165,11 @@ export class RegisterComponent implements OnInit {
   }
 
   reset() {
-    if (this.isNew.value == true) {
-      this.formModel.reset();
-      this.formModel.patchValue({ gender: 'Male', transport: 'Bus', isNew: true });
-      this.refAutoSelector.clear();
-      this.refAutoSelector.close();
-      this.referenceDetails = {};
-      this.autoCompleteNameList = [];
-    }
-    else {
-      this.formModel.reset();
-      this.formModel.patchValue({ gender: 'Male', transport: 'Bus' });
-    }
+    this.formModel.reset();
+    this.formModel.patchValue({ gender: 'Male', transport: 'Bus' });
+    this.refAutoSelector.data.length > 0 ? this.refAutoSelector.clear() : '';
+    this.refAutoSelector.isOpen == true ? this.refAutoSelector.close() : '';
+    this.autoCompleteMobileList = [];
   }
 
   // HPYM
@@ -147,7 +181,8 @@ export class RegisterComponent implements OnInit {
   }
 
   onMobileSearch(e) {
-    if (e && e.length >= 3) {
+    if (e && e.length >= 2) {
+      this.formModel.patchValue({ 'phone': e, 'isNew': true });
       console.log('ss', e);
       this.service.phoneAutoFill(e).subscribe((res: any) => {
         this.autoCompleteMobileList = res.data;
@@ -161,22 +196,28 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  onNameSelected(e) {
-    console.log(e);
-    this.selectedMobileNo = e.Mobile;
-    this.getFullForm();
+  onMobileCleared() {
+    this.selectedMobileNo = null;
+    this.formModel.patchValue({ 'isNew': true })
+    this.reset();
   }
 
-  onReferenceSelected(e) {
-    this.formModel.patchValue({ 'reference': e['Full Name'], 'sabha': e['Sabha'] });
-    this.formModel.get('reference').setErrors(null);
-    this.referenceDetails = e;
-  }
+  // onNameSelected(e) {
+  //   console.log(e);
+  //   this.selectedMobileNo = e.Mobile;
+  //   this.getFullForm();
+  // }
 
-  onReferenceCleared() {
-    this.formModel.patchValue({ 'reference': null });
-    this.refAutoSelector.close();
-  }
+  // onReferenceSelected(e) {
+  //   this.formModel.patchValue({ 'reference': e['Full Name'], 'sabha': e['Sabha'] });
+  //   this.formModel.get('reference').setErrors(null);
+  //   this.referenceDetails = e;
+  // }
+
+  // onReferenceCleared() {
+  //   this.formModel.patchValue({ 'reference': null });
+  //   this.refAutoSelector.close();
+  // }
 
 
   getFullForm() {
@@ -193,9 +234,11 @@ export class RegisterComponent implements OnInit {
         transport: 'Bus',
         sabha: response['Sabha'],
         isNew: false,
-        samparkId: response['_id']
-      })
-      this.numberModal.hide();
+        samparkId: response['_id'],
+        dob: response['Birth Date'].split('-').reverse().join('-')
+      });
+      this.getSabhaList();
+      // this.numberModal.hide();
       console.log(this.formModel.value);
       // this.formModel.get('reference').setValidators(Validators.required);
       // this.formModel.patchValue(res.data);
@@ -256,6 +299,20 @@ export class RegisterComponent implements OnInit {
       Math.floor(timeDifference / milliSecondsInASecond) % secondsInAMinute;
 
     return { secondsToDday, minutesToDday, hoursToDday, daysToDday };
+  }
+
+  captureScreenshot() {
+    this.captureService.getImage((document.getElementById('box-container') as HTMLElement), true)
+      .pipe(
+        tap((img:any) => {
+          console.log(img);
+          var a = document.createElement("a"); //Create <a>
+          a.href = img; //Image Base64 Goes here
+          a.download = "HPYM_2023_" + document.getElementsByClassName('person-name')[0].innerHTML + '.jpg'; //File name Here
+          a.click(); //Downloaded file
+          this.reset();
+        })
+      ).subscribe();
   }
 }
 

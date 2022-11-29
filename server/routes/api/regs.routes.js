@@ -6,6 +6,7 @@ module.exports = router => {
     router.get('/regs/formData', regsController.formDataFromMobile);
     router.post('/regs/register', regsController.register);
     router.get('/regs', regsController.getAll);
+    router.get('/regs/sabhaList', regsController.getSabhaList);
     // router.get('/regs/registerations', regsController.getRegisterations);
     // router.get('/regs/dashboard', regsController.getDashboard);
     // router.post('/regs/removePlayer', regsController.removePlayer);

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 (async () => {
-    uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@prabodham.owbqxe4.mongodb.net/HPYM_2023?retryWrites=true&w=majority`
+    uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_SERVER}/HPYM_2023?authMechanism=DEFAULT&authSource=admin`
     mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true

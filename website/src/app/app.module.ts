@@ -9,7 +9,7 @@ import { RegisterComponent } from './register/register.component';
 
 // Ext Modules
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
-import { GuiGridModule } from '@generic-ui/ngx-grid';
+import { NgxCaptureModule } from 'ngx-capture';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,7 @@ import { GuiGridModule } from '@generic-ui/ngx-grid';
     ReactiveFormsModule,
     HttpClientModule,
     AutocompleteLibModule,
-    GuiGridModule
+    NgxCaptureModule
   ],
   providers: [],
   bootstrap: [AppComponent]

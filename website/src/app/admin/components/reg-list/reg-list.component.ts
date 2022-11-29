@@ -40,7 +40,7 @@ export class RegListComponent implements OnInit {
     },
     {
       header: 'Follow Up',
-      field: (v) => v.sampark['Follow Up'] ? v.sampark['Follow Up'] : 'NONE'
+      field: (v) => v.sampark['FollowUp Name'] ? v.sampark['FollowUp Name'] : 'NONE'
     },
     {
       header: 'Sabha',

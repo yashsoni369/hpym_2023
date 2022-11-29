@@ -28,4 +28,9 @@ regsController.getAll = async (req, res) => {
     responseHelper.sendResponse(response)
 }
 
+regsController.getSabhaList = async (req, res) => {
+    var response = await regsService.getSabhaList(req, res);
+    responseHelper.sendResponse(response)
+}
+
 module.exports = regsController;

@@ -42,7 +42,7 @@ regsService.formDataFromMobile = async (req, res) => {
             if (id != 0) {
                 return { statusCode: 400, message: 'Member already Registered', data: '', res }
             }
-            var member = await samparkSchema.find({ "Mobile": mob }, { 'First Name': 1,'Middle Name': 1,'Last Name': 1, 'Mobile': 1, 'Ref Name': 1, 'FollowUp Name': 1, 'Gender': 1, 'Sabha': 1, 'Email': 1, 'Attending Sabha': 1 });
+            var member = await samparkSchema.find({ "Mobile": mob }, { 'First Name': 1, 'Middle Name': 1, 'Last Name': 1, 'Mobile': 1, 'Ref Name': 1, 'FollowUp Name': 1, 'Gender': 1, 'Sabha': 1, 'Email': 1, 'Attending Sabha': 1, 'Birth Date': 1 });
             return { statusCode: 200, message: 'Full Details', data: member, res }
         }
         return { statusCode: 404, message: 'No Data found', data: '', res }
@@ -130,39 +130,49 @@ regsService.getAll = async (req, res) => {
         var regs = await registerationModel.aggregate(
             [
                 {
-                  '$lookup': {
-                    'from': 'samparks', 
-                    'localField': 'samparkId', 
-                    'foreignField': '_id', 
-                    'as': 'sampark'
-                  }
+                    '$lookup': {
+                        'from': 'samparks',
+                        'localField': 'samparkId',
+                        'foreignField': '_id',
+                        'as': 'sampark'
+                    }
                 }, {
-                  '$unwind': {
-                    'path': '$sampark'
-                  }
+                    '$unwind': {
+                        'path': '$sampark'
+                    }
                 }, {
-                  '$project': {
-                    'transport': 1, 
-                    'isNew': 1, 
-                    'seva': 1, 
-                    'sampark.First Name': 1, 
-                    'sampark.Middle Name': 1, 
-                    'sampark.Last Name': 1, 
-                    'sampark.Ref Name': 1, 
-                    'sampark.Sabha': 1, 
-                    'sampark.Attending Sabha': 1, 
-                    'sampark.Mobile': 1, 
-                    'sampark.FollowUp Name': 1, 
-                    'sampark.Gender': 1, 
-                    'sampark.Email': 1, 
-                    'sampark.% Present': 1, 
-                    'sampark.Joining Date': 1
-                  }
+                    '$project': {
+                        'transport': 1,
+                        'isNew': 1,
+                        'seva': 1,
+                        'sampark.First Name': 1,
+                        'sampark.Middle Name': 1,
+                        'sampark.Last Name': 1,
+                        'sampark.Ref Name': 1,
+                        'sampark.Sabha': 1,
+                        'sampark.Attending Sabha': 1,
+                        'sampark.Mobile': 1,
+                        'sampark.FollowUp Name': 1,
+                        'sampark.Gender': 1,
+                        'sampark.Email': 1,
+                        'sampark.% Present': 1,
+                        'sampark.Joining Date': 1
+                    }
                 }
-              ]
+            ]
         ).sort({ createdAt: 1 }).exec()
         var totalRecords = await registerationModel.countDocuments({});
         return { statusCode: 200, message: 'Registerations List', data: { regs, totalRecords }, res }
+    } catch (e) {
+        return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
+    }
+}
+
+regsService.getSabhaList = async (req, res) => {
+    try {
+
+        var totalRecords = await samparkSchema.distinct('Sabha', { 'Gender': req.query.gender });
+        return { statusCode: 200, message: 'Sabha list', data: totalRecords.filter(s => s != "" && (req.query.gender == 'Male' ? !s.includes('Yuvati') : s)), res }
     } catch (e) {
         return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
     }

@@ -11,7 +11,9 @@ docker build -t yashsoni2737/hpym_service:latest .
 docker push yashsoni2737/hpym_service:latest
 docker rm -f hpym_service
 docker pull yashsoni2737/hpym_service:latest
-docker run -itd -p 3001:3001 --restart=always --name=hpym_service yashsoni2737/hpym_service:latest
+docker run -itd -p 3001:3001 --restart=always --network=backend --name=hpym_service yashsoni2737/hpym_service:latest
+docker run -itd --network backend -v /home/ubuntu/volumes/mongo_db:/data/db -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -p 27017:27017 --name mongo_db mongo
+
 
 docker build -t yashsoni2737/hpym_website:latest .
 docker push yashsoni2737/hpym_website:latest

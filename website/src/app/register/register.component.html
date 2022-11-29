@@ -39,9 +39,9 @@
                                 <span class="ticks" id="seconds"> {{t.secondsToDday}} </span>s
                             </div>
                         </div>
-                        
+
                         <ng-template #sorry>
-                            Sorry, something went wrong...
+                            The Time has COME! Mahotsav is LIVE!
                         </ng-template>
                     </div>
                 </div>
@@ -59,13 +59,39 @@
                                     <h3 class="text-uppercase">HPYM 2023 Mahotsav Registeration</h3>
                                     <h6 class="text-uppercase">8th January 2023, Koli Bhartana - Surat</h6>
                                     <hr>
-                                    <p class="mb-3" *ngIf="isNew.value == true">Please fill up all fields, with
-                                        <b>Reference Name</b> to allocate you to a Area
+                                    <p class="mb-3">Please enter your <b>Mobile No first</b>, If you attended Sabha, we
+                                        will fetch your data
                                     </p>
-                                    <p class="mb-3" *ngIf="isNew.value == false">All your details are fetched from Sabha
-                                        Data, please <b>change if only necessary</b></p>
-
                                     <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1n">Mobile No</label>
+                                                <ng-autocomplete #mobAutoSelector autocomplete="none"
+                                                    [data]="autoCompleteMobileList"
+                                                    [searchKeyword]="searchMobileKeyword" placeholder="Enter Mobile No"
+                                                    [historyListMaxNumber]="0" (inputCleared)="onMobileCleared()"
+                                                    (selected)='onMobileSelected($event)'
+                                                    (inputChanged)='onMobileSearch($event)'
+                                                    [itemTemplate]="itemTemplate" [minQueryLength]="3"
+                                                    [debounceTime]="800">
+                                                </ng-autocomplete>
+                                                <!-- <input type="text" id="form3Example1n" id="phone"
+                                                    formControlName="phone" placeholder="Enter your Phone No."
+                                                    class="form-control" /> -->
+                                                <div class="text-danger"
+                                                    *ngIf="phone.invalid && (phone.dirty || phone.touched  || f.submitted)">
+                                                    <div *ngIf="phone.errors.required">
+                                                        Please Enter your Phone No.
+                                                    </div>
+                                                    <div *ngIf="phone.errors.minlength">
+                                                        Phone number should be of 10 digit
+                                                    </div>
+                                                    <div *ngIf="phone.errors.pattern">
+                                                        Phone number is not Valid
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="col-md-6 mb-4">
                                             <div class="form-outline">
                                                 <label class="form-label" for="form3Example1m">First Name</label>
@@ -84,7 +110,7 @@
                                             <div class="form-outline">
                                                 <label class="form-label" for="form3Example1m">Middle Name</label>
                                                 <input type="text" id="form3Example1m" class="form-control" id="name"
-                                                    formControlName="middleName" placeholder="Enter your last name" />
+                                                    formControlName="middleName" placeholder="Enter your middle name" />
                                                 <div class="text-danger"
                                                     *ngIf="middleName.invalid && (middleName.dirty || middleName.touched  || f.submitted)">
                                                     <div *ngIf="middleName.errors.required">
@@ -106,26 +132,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mb-4">
-                                            <div class="form-outline">
-                                                <label class="form-label" for="form3Example1n">Mobile No</label>
-                                                <input type="text" id="form3Example1n" id="phone"
-                                                    formControlName="phone" placeholder="Enter your Phone No."
-                                                    class="form-control" />
-                                                <div class="text-danger"
-                                                    *ngIf="phone.invalid && (phone.dirty || phone.touched  || f.submitted)">
-                                                    <div *ngIf="phone.errors.required">
-                                                        Please Enter your Phone No.
-                                                    </div>
-                                                    <div *ngIf="phone.errors.minlength">
-                                                        Phone number should be of 10 digit
-                                                    </div>
-                                                    <div *ngIf="phone.errors.pattern">
-                                                        Phone number is not Valid
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <div class="row">
@@ -133,10 +139,23 @@
                                             <div class="form-outline">
                                                 <label class="form-label" for="gender">Gender</label>
 
-                                                <select class="form-select" id="gender" formControlName="gender">
+                                                <select (change)="onGenderChange($event)" class="form-select"
+                                                    id="gender" formControlName="gender">
                                                     <option value="Male">Male</option>
                                                     <option value="Female">Female</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="dob">Date of Birth</label>
+                                                <input type="date" class="form-control" formControlName="dob" />
+                                                <div class="text-danger"
+                                                    *ngIf="dob.invalid && (dob.dirty || dob.touched  || f.submitted)">
+                                                    <div *ngIf="dob.errors.required">
+                                                        Please Select your DOB.
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-sm-6 mb-4">
@@ -149,9 +168,26 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-md-6 col-sm-6 mb-4">
+                                            <div class="form-outline">
+                                                <label class="form-label" for="form3Example1m">Sabha</label>
+                                                <select type="text" id="form3Example1m" class="form-select" id="sabha"
+                                                    formControlName="sabha">
+                                                    <option [value]="null">Select Sabha Area</option>
+                                                    <option *ngFor="let sabha of sabhaList" [value]="sabha">{{sabha}}
+                                                    </option>
+                                                </select>
+                                                <div class="text-danger"
+                                                    *ngIf="sabha.invalid && (sabha.dirty || sabha.touched  || f.submitted)">
+                                                    <div *ngIf="sabha.errors.required">
+                                                        Please Select your Sabha.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="row">
-                                        <div *ngIf="isNew.value == true" class="col-md-6 mb-4">
+                                    <!-- <div class="row"> -->
+                                    <!-- <div *ngIf="isNew.value == true" class="col-md-6 mb-4">
                                             <div class="form-outline">
                                                 <label class="form-label" for="form3Example1m">Reference Name</label>
                                                 <ng-autocomplete #refAutoSelector [data]="autoCompleteNameList"
@@ -163,24 +199,13 @@
                                                     [notFoundTemplate]="notFoundTemplate" [minQueryLength]="4"
                                                     [debounceTime]="800">
                                                 </ng-autocomplete>
-                                                <!-- <input type="text" id="form3Example1m" class="form-control"
-                                                    id="reference" formControlName="reference"
-                                                    placeholder="Enter your Reference" /> -->
                                                 <div class="text-danger"
                                                     *ngIf="f.submitted && isNew.value == true && reference.value == ''">
                                                     Please Enter Reference Name.
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6 mb-4">
-                                            <div class="form-outline">
-                                                <label class="form-label" for="form3Example1m">Sabha</label>
-                                                <input type="text" id="form3Example1m" class="form-control" id="sabha"
-                                                    formControlName="sabha"
-                                                    [placeholder]="isNew.value == true ? 'Sabha area will be fetched from Reference name' : 'Enter Sabha Name'" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </div> -->
+
 
                                     <div class="d-flex justify-content-end pt-3">
                                         <button type="button" class="btn btn-light btn-lg me-2" (click)="reset()">Reset
@@ -226,11 +251,11 @@
                     <hr>
                     <div class="mb-3">
                         <label for="message-text" class="col-form-label">Name:</label>
-                        <ng-autocomplete [data]="autoCompleteNameList" [searchKeyword]="searchNameKeyword"
+                        <!-- <ng-autocomplete [data]="autoCompleteNameList" [searchKeyword]="searchNameKeyword"
                             placeholder="Enter Full Name" (selected)='onNameSelected($event)'
                             (inputChanged)='onNameSearch($event)' [itemTemplate]="nameTemplate"
                             [notFoundTemplate]="notFoundTemplate" [minQueryLength]="4" [debounceTime]="800">
-                        </ng-autocomplete>
+                        </ng-autocomplete> -->
                     </div>
                 </form>
                 <hr>
@@ -257,36 +282,65 @@
     <a [innerHTML]="ref['Full Name'] + ' - ' + ref['Sabha']"></a>
 </ng-template>
 <ng-template #notFoundTemplate let-notFound>
-    <div>No Member Found</div>
+    <div>New Member</div>
 </ng-template>
 
-<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+<div class="modal fade" id="successModal" data-bs-backdrop="static" data-bs-keyboard="false"
     aria-labelledby="successModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="autoCompleteModal">Registeration Successfully Done</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    (click)="reset()"></button>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="reset()"></button> -->
             </div>
-            <div class="modal-body" *ngIf="isNew.value == true">
-                <h5 class="text-center">Jay Swaminarayan Das na das</h5>
-                <h5 class="text-center">Thank you for registering.</h5>
-                <p>Next Step : Message {{reference.value}} - {{phone.value}} so he can process your registeration</p>
-                <p class="text-bold">Click on Send Message below</p>
-            </div>
-            <div class="modal-body" *ngIf="isNew.value == false">
-                <h5 class="text-center">Jay Swaminarayan Das na das</h5>
-                <h5 class="text-center">Thank you for registering.</h5>
+            <div class="modal-body">
+                <div class="box-container" id="box-container">
+                    <div class="full-width">
+                        <img src="../../assets/img/banner_success3.png" class="img-responsive">
+                    </div>
+                    <div class="haif-more">
+                        <div class="person-details" *ngIf="successData && successData['Sabha']">
+                            <!-- 26 -->
+                            <h3 class="person-name mb-1" style="color: #da8767;" *ngIf="(successData['First Name'] + ' ' + successData['Last Name']).length <= 26">{{ (successData['First Name'] + ' ' + successData['Last Name'])}}</h3> 
+                            <h3 class="person-name mb-1" style="color: #da8767;" *ngIf="(successData['First Name'] + ' ' + successData['Last Name']).length > 26">{{ (successData['First Name'] + ' ' + successData['Last Name'][0])}}</h3> 
+                            <p style="color: #d08373;">{{successData['Sabha'].split('(')[0]}}</p>
+                            <h5 class="registered mt-3" style="color: #da8767;">I HAVE REGISTERED</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="box-container" id="box-container">
+                    <div class="full-width">
+                        <img src="../../assets/img/banner_success2.jpg" class="img-responsive">
+                    </div>
+                    <div class="haif-more">
+                        <div class="person-details" *ngIf="successData && successData['Sabha']">
+                            <h3 class="person-name" *ngIf="(successData['First Name'] + ' ' + successData['Last Name']).length <= 14">{{ (successData['First Name'] + ' ' + successData['Last Name'])}}</h3>
+                            <h6 class="person-name" *ngIf="(successData['First Name'] + ' ' + successData['Last Name']).length > 14 && (successData['First Name'] + ' ' + successData['Last Name']).length <= 20">{{ (successData['First Name'] + ' ' + successData['Last Name'])}}</h6>
+                            <h6 class="person-name" *ngIf="(successData['First Name'] + ' ' + successData['Last Name']).length > 20">{{ (successData['First Name'] + ' ' + successData['Last Name'][0])}}</h6>
+                            <p>{{successData['Sabha'].split('(')[0]}}</p>
+                        </div>
+                    </div>
+                    <div class="half-less">
+                        <div class="details-sec">
+                            <p class="normal mb-0 bold">8th January, 2023</p>
+                            <p class="normal text-center">Koli Bhartana - Surat</p>
+                            <p class="normal bold">I HAVE REGISTERED </p>
+                        </div>
+
+                    </div>
+                </div> -->
+                <!-- <h5 class="text-center">Jay Swaminarayan Das na das</h5> -->
+                <!-- <h5 class="text-center">Thank you for registering.</h5> -->
             </div>
             <div class="modal-footer">
-                <button type="button" *ngIf="isNew.value == false" data-bs-dismiss="modal" aria-label="Close"
-                    (click)="reset()" class="btn btn-block btn-lg btn-outline-info">
-                    Close</button>
-                <a href="{{'whatsapp://send?phone=91'+referenceDetails['Mobile']+'&text=Hi, '+referenceDetails['Full Name']+' I have registered for HariPrabodham Yuva Mohatsav! Jay Swaminarayan Das na Das?'}}"
+                <button type="button" class="btn btn-block btn-lg btn-outline-info" (click)="captureScreenshot()">
+                    <i class="fa fa-camera"></i>
+                    Take Screenshot</button>
+                <!-- <a href="{{'whatsapp://send?phone=91'+referenceDetails['Mobile']+'&text=Hi, '+referenceDetails['Full Name']+' I have registered for HariPrabodham Yuva Mohatsav! Jay Swaminarayan Das na Das?'}}"
                     *ngIf="isNew.value == true" class="btn btn-block btn-lg btn-outline-success">
                     <i class="fa fa-whatsapp"></i>
-                    Send Message</a>
+                    Send Message</a> -->
             </div>
         </div>
     </div>

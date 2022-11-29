@@ -23,6 +23,10 @@ export class RegisterationService {
     return this.http.get(this.url + '/regs/formData?mobileNo=' + mobile);
   }
 
+  getSabhaList(gender) {
+    return this.http.get(this.url + '/regs/sabhaList?gender=' + gender);
+  }
+
   registerForMohatsav(body) {
     return this.http.post(this.url + '/regs/register', body);
   }
