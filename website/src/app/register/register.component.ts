@@ -4,6 +4,7 @@ import { interval } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { RegisterationService } from '../services/registeration.service';
 import { NgxCaptureService } from 'ngx-capture';
+import { Title } from '@angular/platform-browser';
 declare var bootstrap: any;
 
 @Component({
@@ -47,12 +48,15 @@ export class RegisterComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
     private service: RegisterationService,
-    private captureService: NgxCaptureService
+    private captureService: NgxCaptureService,
+    private titleService:Title
   ) {
     this.timeLeft$ = interval(1000).pipe(
       map(x => this.calcDateDiff()),
       shareReplay(1)
     );
+
+    this.titleService.setTitle("HPYM 2023 Surat - Registeration");
   }
 
   ngOnInit(): void {
@@ -311,6 +315,10 @@ export class RegisterComponent implements OnInit {
           a.download = "HPYM_2023_" + document.getElementsByClassName('person-name')[0].innerHTML + '.jpg'; //File name Here
           a.click(); //Downloaded file
           this.reset();
+
+              var m = new bootstrap.Modal(document.getElementById('successModal'), {});
+              m.hide()
+
         })
       ).subscribe();
   }
