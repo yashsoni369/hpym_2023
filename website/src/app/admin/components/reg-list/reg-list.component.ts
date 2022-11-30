@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { GuiColumn, GuiPaging, GuiPagingDisplay, GuiSearching, GuiSorting, GuiSummaries, GuiFiltering, GuiDataType } from '@generic-ui/ngx-grid';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService } from 'src/app/services/admin.service';
 declare var bootstrap: any;
-
+declare let $: any;
+import { users } from "../../roles";
 @Component({
   selector: 'app-reg-list',
   templateUrl: './reg-list.component.html',
@@ -10,14 +11,26 @@ declare var bootstrap: any;
 })
 export class RegListComponent implements OnInit {
 
-  constructor(private service: AdminService) { }
+  constructor(private service: AdminService, private fb: FormBuilder) { }
   loading = false;
   autoResizeWidth = true;
+  loginModal;
+  loginForm: FormGroup;
+
   ngOnInit(): void {
-    this.getAllRegs();
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+    });
+    this.loginModal = new bootstrap.Modal(document.getElementById('loginModal'), {});
+    this.loginModal.show();
+    // this.getAllRegs();
+
+
+    // return table;
   }
 
-  columns: Array<GuiColumn> = [
+  columns = [
     {
       header: 'First Name',
       field: (v) => v.sampark['First Name']
@@ -59,7 +72,6 @@ export class RegListComponent implements OnInit {
     {
       header: 'Seva',
       field: 'seva',
-      type: GuiDataType.NUMBER,
       summaries: {
         enabled: true,
         summariesTypes: ['sum']
@@ -76,33 +88,6 @@ export class RegListComponent implements OnInit {
     }
   ];
 
-  sorting: GuiSorting = {
-    enabled: true
-  };
-
-  summaries: GuiSummaries = {
-    enabled: true
-  };
-
-  filtering: GuiFiltering = {
-    enabled: true
-  }
-
-  searching: GuiSearching = {
-    enabled: true,
-    placeholder: 'Search Members'
-  };
-
-  paging: GuiPaging = {
-    enabled: true,
-    page: 1,
-    pageSize: 10,
-    pageSizes: [10, 25, 50],
-    pagerTop: false,
-    pagerBottom: true,
-    display: GuiPagingDisplay.BASIC
-  };
-
   source;
 
   getAllRegs() {
@@ -111,6 +96,33 @@ export class RegListComponent implements OnInit {
       (res: any) => {
         this.source = res.data.regs
         this.loading = false;
+
+        $(document).ready(function () {
+          var table = $("#tableName").DataTable({
+            "autoWidth": true,
+            scrollX: true,
+            dom: 'Blfrtip',
+            buttons: [
+              {
+                extend: 'excel',
+                split: ['copy', 'csv', 'pdf', 'print']
+              }
+            ]
+          });
+
+          //       table.buttons().container()
+          // .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+        });          // info: false,
+        // searching: false,
+        // paging: true,
+        // bFilter: false,
+        // bInfo: false,
+        // 'dom': 'Rlfrtip',
+        // 'colReorder': {
+        //   'allowReorder': false
+        // },
+        // order: [[2, "asc"]]
+        // });
       },
       err => {
         this.loading = false;
@@ -124,6 +136,22 @@ export class RegListComponent implements OnInit {
     // var cm = new bootstrap.Modal(document.getElementById('confirmModal'), {});
     // cm.show();
 
+  }
+
+  // Login
+  onLogin() {
+    if(this.loginForm.valid) {
+      var loginData = this.loginForm.value;
+      var u = users.find(s=> s.emailId == loginData.username && s.password == loginData.password);
+      if(u) {
+        this.loginModal.hide();
+        this.getAllRegs();
+        this.loginForm.value;
+      }
+      else {
+        this.loginForm.reset();
+      }
+    }
   }
 
 }

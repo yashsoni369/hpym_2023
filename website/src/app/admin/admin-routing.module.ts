@@ -9,7 +9,7 @@ const routes: Routes = [
   {
     path: '', component: AdminComponent, children: [
 
-      { path: '', pathMatch:'full',redirectTo:'login' },
+      { path: '', pathMatch:'full',redirectTo:'registerations' },
       { path: 'login', component: LoginComponent },
       { path: 'registerations', component: RegListComponent },
       { path: 'dashboard', component: RegDashboardComponent }

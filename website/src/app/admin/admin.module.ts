@@ -6,9 +6,9 @@ import { AdminComponent } from './admin.component';
 import { RegListComponent } from './components/reg-list/reg-list.component';
 import { RegDashboardComponent } from './components/reg-dashboard/reg-dashboard.component';
 import { LoginComponent } from './components/login/login.component';
-import { GuiGridModule } from '@generic-ui/ngx-grid';
 
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 @NgModule({
   declarations: [
     AdminComponent,
@@ -19,7 +19,9 @@ import { GuiGridModule } from '@generic-ui/ngx-grid';
   imports: [
     CommonModule,
     AdminRoutingModule,
-    GuiGridModule
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule
   ]
 })
 export class AdminModule { }

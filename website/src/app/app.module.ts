@@ -10,11 +10,13 @@ import { RegisterComponent } from './register/register.component';
 // Ext Modules
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { NgxCaptureModule } from 'ngx-capture';
+import { SpinnerComponent } from './shared/spinner/spinner.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    RegisterComponent
+    RegisterComponent,
+    SpinnerComponent
   ],
   imports: [
     BrowserModule,

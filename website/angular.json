@@ -35,10 +35,22 @@
             ],
             "styles": [
               "src/styles.scss",
-              "./node_modules/font-awesome/css/font-awesome.min.css"
+              "./node_modules/font-awesome/css/font-awesome.min.css",
+              "./node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
+              "./node_modules/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css"
+
             ],
             "scripts": [
               "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/datatables.net/js/jquery.dataTables.js",
+              "./node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js",
+              "./node_modules/datatables.net-buttons/js/dataTables.buttons.min.js",
+              "./node_modules/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js",
+              "./node_modules/jszip/dist/jszip.min.js",
+              "./node_modules/pdfmake/build/pdfmake.min.js",
+              "./node_modules/datatables.net-buttons/js/buttons.html5.min.js",
+              "./node_modules/datatables.net-buttons/js/buttons.print.min.js",
+              "./node_modules/datatables.net-buttons/js/buttons.colVis.min.js",
               "./node_modules/@popperjs/core/dist/umd/popper.min.js",
               "./node_modules/bootstrap/dist/js/bootstrap.min.js"
             ]

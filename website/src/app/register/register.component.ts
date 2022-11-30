@@ -44,6 +44,7 @@ export class RegisterComponent implements OnInit {
   timeLeft$;
   sabhaList = [];
   successData = {};
+  loading = false;
   @ViewChild('mobAutoSelector') refAutoSelector;
 
   constructor(private fb: FormBuilder,
@@ -66,6 +67,7 @@ export class RegisterComponent implements OnInit {
 
     // var m = new bootstrap.Modal(document.getElementById('successModal'), {});
     //       m.show();
+   
     this.getSabhaList();
     // var m = new bootstrap.Modal(document.getElementById('successModal'), {});
     // m.show();
@@ -73,12 +75,14 @@ export class RegisterComponent implements OnInit {
   }
 
   getSabhaList() {
+    this.loading = true;
     this.service.getSabhaList(this.formModel.get('gender').value || 'Male').subscribe(
       (res: any) => {
         this.sabhaList = res.data;
+        this.loading = false;
       },
       err => {
-
+        this.loading = false;
       }
     )
   }
@@ -129,7 +133,6 @@ export class RegisterComponent implements OnInit {
 
     if (this.formModel.valid) {
       console.log();
-
       // console.log(this.formModel.value);
       var formValue = this.formModel.value;
       var formBody = {};
@@ -186,13 +189,15 @@ export class RegisterComponent implements OnInit {
 
   onMobileSearch(e) {
     if (e && e.length >= 2) {
+      this.loading = true;
       this.formModel.patchValue({ 'phone': e, 'isNew': true });
       console.log('ss', e);
       this.service.phoneAutoFill(e).subscribe((res: any) => {
         this.autoCompleteMobileList = res.data;
         console.log(this.autoCompleteMobileList);
+        this.loading = false;
       }, err => {
-
+        this.loading = false;
       })
     }
     else {
