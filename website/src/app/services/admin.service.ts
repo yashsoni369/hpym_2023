@@ -14,4 +14,8 @@ export class AdminService {
   getAll() {
     return this.http.get(this.url + '/regs');
   }
+
+  deRegisterMember(body) {
+    return this.http.post(this.url + '/regs/remove',body);
+  }
 }

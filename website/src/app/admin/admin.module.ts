@@ -9,6 +9,7 @@ import { LoginComponent } from './components/login/login.component';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { SharedModule } from '../shared/shared.module';
 @NgModule({
   declarations: [
     AdminComponent,
@@ -21,7 +22,8 @@ import { HttpClientModule } from '@angular/common/http';
     AdminRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    SharedModule
   ]
 })
 export class AdminModule { }

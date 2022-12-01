@@ -33,4 +33,9 @@ regsController.getSabhaList = async (req, res) => {
     responseHelper.sendResponse(response)
 }
 
+regsController.deRegisterMember = async (req, res) => {
+    var response = await regsService.deRegisterMember(req, res);
+    responseHelper.sendResponse(response)
+}
+
 module.exports = regsController;

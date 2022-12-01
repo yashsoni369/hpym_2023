@@ -145,6 +145,9 @@ regsService.getAll = async (req, res) => {
                         'transport': 1,
                         'isNew': 1,
                         'seva': 1,
+                        '_id': 1,
+                        'createdAt': 1,
+                        'sampark._id': 1,
                         'sampark.First Name': 1,
                         'sampark.Middle Name': 1,
                         'sampark.Last Name': 1,
@@ -156,7 +159,8 @@ regsService.getAll = async (req, res) => {
                         'sampark.Gender': 1,
                         'sampark.Email': 1,
                         'sampark.% Present': 1,
-                        'sampark.Joining Date': 1
+                        'sampark.Joining Date': 1,
+                        'sampark.Birth Date': 1
                     }
                 }
             ]
@@ -177,6 +181,157 @@ regsService.getSabhaList = async (req, res) => {
         return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
     }
 }
+
+regsService.deRegisterMember = async (req, res) => {
+    try {
+        var samparkId;
+        if (req.body.isNew && req.body.isNew == 'Yes') {
+            var sampark = await samparkSchema.findOne({ 'Mobile': req.body.mobileNo, 'In Groups': 'HPYM2023_NEW' });
+            samparkId = sampark.id || null;
+            await samparkSchema.deleteOne({ _id: mongoose.Types.ObjectId(samparkId) });
+        }
+        else {
+            var sampark = await samparkSchema.findOne({ 'Mobile': req.body.mobileNo });
+            samparkId = sampark.id || null;
+        }
+        var rec = await registerationModel.deleteOne({ samparkId: mongoose.Types.ObjectId(samparkId) })
+        // var totalRecords = await samparkSchema.distinct('Sabha', { 'Gender': req.query.gender });
+        return { statusCode: 200, message: 'Sabha list', data: rec, res }
+    } catch (e) {
+        return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
+    }
+}
+
+// registerationModel.aggregate([
+//     {
+//         '$lookup': {
+//             'from': 'samparks',
+//             'localField': 'samparkId',
+//             'foreignField': '_id',
+//             'as': 'sampark'
+//         }
+//     }, {
+//         '$match': {
+//             'sampark.In Groups': 'HPYM2023_NEW'
+//         }
+//     }, {
+//         '$unwind': {
+//             'path': '$sampark'
+//         }
+//     }, {
+//         '$project': {
+//             '_id': 1,
+//             'sampark._id': 1,
+//             'sampark.First Name': 1,
+//             'sampark.Last Name': 1,
+//             'sampark.Mobile': 1,
+//             'sampark.In Groups': 1
+//         }
+//     }
+// ]).exec().then(async (d) => {
+//     // all new regs
+//     var allNewNums = (d.map(dd => dd.sampark['Mobile'] = dd.sampark['Mobile'].indexOf(0) == '0' ? dd.sampark['Mobile'].substring(1) : dd.sampark['Mobile']));
+
+//     var allOldSame = await samparkSchema.find({ 'Mobile': { $in: allNewNums }, 'In Groups': { $ne: 'HPYM2023_NEW' } });
+//     var oldIdsToBeAdded = allOldSame.map(o => o.id);
+//     var oldNumbers = allOldSame.map(o => o.Mobile);
+//     // console.log(oldIdsToBeAdded);
+
+//     for (var n of d) {
+//         if (oldNumbers.includes(n.sampark['Mobile'].indexOf(0) == '0' ? n.sampark['Mobile'].substring(1) : n.sampark['Mobile'])) {
+//             console.log('dupes ', n.sampark['First Name'], n.sampark['Mobile'], 'Old Id: ', n._id);
+//             var existingId = (allOldSame.find(a => a['Mobile'] == n.sampark['Mobile'])._id);
+//             console.log('dupes old', existingId)
+//             // var regUpdates = await registerationModel.updateOne({ _id: n._id }, { $set: { samparkId: existingId, isNew: false } });
+//             // console.log(regUpdates)
+//         }
+//     }
+
+// }).catch(e => {
+
+// })
+
+// Delete starting with 0 || 11 digit number check
+// samparkSchema.find({
+//     'Mobile': { $exists: true }, 'In Groups': 'HPYM2023_NEW',
+//     $expr: { $gt: [{ $strLenCP: '$Mobile' }, 10] }
+// }).then(s => {
+//     console.log('11 Digit num', s);
+//     for (const mem of s) {
+//         if (mem['Mobile'].startsWith('0')) {
+//             // console.log(mem['Mobile'])
+//             // mem.delete();
+//         }
+//     }
+// });
+
+// samparkSchema.aggregate([
+//     {
+//         '$group': {
+//             '_id': '$Mobile',
+//             'ids': {
+//                 '$push': '$_id'
+//             },
+//             'totalIds': {
+//                 '$sum': 1
+//             }
+//         }
+//     }, {
+//         '$match': {
+//             'totalIds': {
+//                 '$gt': 1
+//             }
+//         }
+//     }, {
+//         '$project': {
+//             '_id': false,
+//             'documentsThatHaveDuplicatedValue': '$ids'
+//         }
+//     }
+// ]).exec().then(async (s) => {
+//     console.log(s.length);
+//     var arrays = s.map(a => {
+//         return a.documentsThatHaveDuplicatedValue;
+//     })
+
+//     var arr2 = [].concat(...arrays);
+
+//     console.log(arr2.length)
+
+//     // change find to delete
+//     var news = await samparkSchema.find({ _id: { $in: arr2 }, 'In Groups': 'HPYM2023_NEW' });
+//     console.log('duplicate mobile new', news);
+
+
+//     // for (const data of s) {
+//     //     samparkSchema.find data[0]
+//     // }
+// })
+
+// registerationModel.aggregate([
+//     {
+//         '$lookup': {
+//             'from': 'samparks',
+//             'localField': 'samparkId',
+//             'foreignField': '_id',
+//             'as': 'sampark'
+//         }
+//     }, {
+//         '$match': {
+//             'sampark.In Groups': {
+//                 '$ne': 'HPYM2023_NEW'
+//             },
+//             'isNew': true
+//         }
+//     }
+// ]).exec().then(async (r) => {
+//     console.log('isnew', r.map(d => d['_id']));
+//     // var res = await registerationModel.updateMany({ _id: { $in: r.map(d => d['_id']) } }, { $set: { 'isNew': false } })
+//     // console.log('update d ', res);
+// })
+
+
+
 
 // .sort({ createdAt: -1 })
 //             .skip(req.params.skip)

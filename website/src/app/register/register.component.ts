@@ -23,7 +23,7 @@ export class RegisterComponent implements OnInit {
     firstName: ['', Validators.required],
     middleName: ['', Validators.required],
     lastName: ['', Validators.required],
-    phone: ['', [Validators.required, Validators.minLength(10), Validators.pattern(this.pattern)]],
+    phone: ['', [Validators.required, Validators.minLength(10),Validators.maxLength(10), Validators.pattern(this.pattern)]],
     gender: ['Male', Validators.required],
     dob: ['', Validators.required],
     transport: ['Bus', Validators.required],
@@ -188,9 +188,13 @@ export class RegisterComponent implements OnInit {
   }
 
   onMobileSearch(e) {
+    this.formModel.patchValue({ 'phone': e, 'isNew': true });
+    if(e.length > 10) {
+      // e.preventDefaults();
+      return false;
+    }
     if (e && e.length >= 2) {
       this.loading = true;
-      this.formModel.patchValue({ 'phone': e, 'isNew': true });
       console.log('ss', e);
       this.service.phoneAutoFill(e).subscribe((res: any) => {
         this.autoCompleteMobileList = res.data;

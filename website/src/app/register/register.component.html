@@ -71,7 +71,7 @@
                                                     [data]="autoCompleteMobileList"
                                                     [searchKeyword]="searchMobileKeyword" placeholder="Enter Mobile No"
                                                     [historyListMaxNumber]="0" (inputCleared)="onMobileCleared()"
-                                                    (selected)='onMobileSelected($event)'
+                                                    (selected)='onMobileSelected($event)' maxlength="10"
                                                     (inputChanged)='onMobileSearch($event)'
                                                     [itemTemplate]="itemTemplate" [minQueryLength]="3"
                                                     [debounceTime]="800">
@@ -84,7 +84,7 @@
                                                     <div *ngIf="phone.errors.required">
                                                         Please Enter your Phone No.
                                                     </div>
-                                                    <div *ngIf="phone.errors.minlength">
+                                                    <div *ngIf="phone.errors.minlength || phone.errors.maxlength">
                                                         Phone number should be of 10 digit
                                                     </div>
                                                     <div *ngIf="phone.errors.pattern">
