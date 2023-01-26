@@ -48,5 +48,63 @@ export const users = [
         emailId: 'vikhroli@hpym.com',
         password: 'vikhroli@369',
         role: 'Vikhroli'
-      }
+      },
+      // Yuvati logins
+      {
+        emailId: 'asalpha-yuvati@hpym.com',
+        password: 'Yasalpha@369',
+        role: 'Asalpha (Yuvati)'
+      },
+      {
+        emailId: 'badlapur-yuvati@hpym.com',
+        password: 'Ybadlapur@369',
+        role: 'Badlapur (Yuvati)'
+      },
+      {
+        emailId: 'cn-yuvati@hpym.com',
+        password: 'Ycn@369',
+        role: 'Chirag Nagar (Yuvati)'
+      },
+      {
+        emailId: 'east-yuvati@hpym.com',
+        password: 'Yeast@369',
+        role: 'Ghatkopar East (Yuvati)'
+      },
+      {
+        emailId: 'west-yuvati@hpym.com',
+        password: 'Ywest@369',
+        role: 'Ghatkopar West (Yuvati)'
+      },
+      {
+        emailId: 'mulund-yuvati@hpym.com',
+        password: 'Ymulund@369',
+        role: 'Mulund (Yuvati)'
+      },
+      {
+        emailId: 'pantnagar-yuvati@hpym.com',
+        password: 'Ypantnagar@369',
+        role: 'Pant Nagar (Yuvati)'
+      },
+      {
+        emailId: 'pgarden-yuvati@hpym.com',
+        password: 'Ypgarden@369',
+        role: 'Pranik Garden (Yuvati)'
+      },
+      {
+        emailId: 'thane-yuvati@hpym.com',
+        password: 'Ythane@369',
+        role: 'Thane (Yuvati)'
+      },
 ]
+
+//   "Asalpha (Yuvati)",
+//   "Badlapur (Yuvati)",
+//   "Chirag Nagar (Yuvati)",
+//   "Ghatkopar East (Yuvati)",
+//   "Ghatkopar West (Yuvati)",
+//   "Ghatkopar-East",
+//   "Mulund (Yuvati)",
+//   "Pant Nagar (Yuvati)",
+//   "Pranik Garden (Yuvati)",
+//   "Thane (Yuvati)",
+//   "Vadil Beno"]

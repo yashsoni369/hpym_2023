@@ -7,4 +7,4 @@ var registeration = new mongoose.Schema({
     seva: Number
 }, { timestamps: true });
 
-module.exports = mongoose.model("registeration", registeration);
+module.exports = mongoose.model("registeration", registeration,"hpym_2023_registerations");

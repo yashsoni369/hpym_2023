@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService } from 'src/app/services/admin.service';
+import { ExcelService } from 'src/app/services/excel.service';
 declare var bootstrap: any;
 declare let $: any;
 import { users } from "../../roles";
@@ -11,7 +12,7 @@ import { users } from "../../roles";
 })
 export class RegListComponent implements OnInit {
 
-  constructor(private service: AdminService, private fb: FormBuilder) { }
+  constructor(private service: AdminService, private fb: FormBuilder, private excelService: ExcelService) { }
   loading = false;
   autoResizeWidth = true;
   loginModal;
@@ -33,6 +34,26 @@ export class RegListComponent implements OnInit {
 
   source;
 
+  exportexcel() {
+    var newarr = [];
+    var srno = 1;
+    this.source.forEach(s => {
+      // var copy = Object.assign({}, s, s.sampark); // we can add as many object as we need.
+      // s = copy;
+      let merged = { ...s, ...s['sampark'] };
+      delete merged['sampark'];
+      merged['Sr no'] = srno;
+      srno++;
+      merged["Age"] = this.calculateAge(merged['Birth Date']);
+      merged["isNew"] = merged["isNew"] == true ? "Yes" : "No";
+      merged["sslRegistered"] = merged["sslRegistered"] == 1 ? "Yes" : "No";
+      merged['Full Name'] = merged['First Name'] + " " + merged['Middle Name'] + " " + merged["Last Name"];
+      delete merged['_id']
+      newarr.push(merged);
+    });
+    this.excelService.exportAsExcelFile(newarr, "HPYM_Regs")
+  }
+
   getAllRegs() {
     this.loading = true;
     this.service.getAll().subscribe(
@@ -40,9 +61,20 @@ export class RegListComponent implements OnInit {
         if (this.loginForm.get('username').value == 'vaibhav@hpym.com') {
           this.source = res.data.regs
         }
+        else if (this.loginForm.get('username').value.includes('yuvati')) {
+          var sabha = users.find(u => u.emailId == this.loginForm.get('username').value).role;
+          this.source = res.data.regs.filter(r => r.sampark.Sabha == sabha);
+        }
         else {
           var area = users.find(u => u.emailId == this.loginForm.get('username').value).role;
           this.source = res.data.regs.filter(r => r.sampark.Sabha.toLowerCase().includes(area.toLowerCase()) && !r.sampark.Sabha.includes('Yuvati'));
+
+          if (area == 'Sarvodaya') {
+            this.source = this.source.concat(res.data.regs.filter(r => r.sampark.Sabha == 'Gopal Bhuvan (Bal)'))
+          }
+          if(area == 'Chirag Nagar') {
+            this.source = this.source.concat(res.data.regs.filter(r => r.sampark.Sabha == 'Maneklal (Bal)'))
+          }
 
         }
         this.loading = false;
@@ -50,22 +82,75 @@ export class RegListComponent implements OnInit {
         var thisref = this;
 
         $(document).ready(function () {
-          var columnDefs = [];
-          thisref.loginForm.get('username').value == 'vaibhav@hpym.com' ? columnDefs.push({
+          var columnDefs: any = [
+          ];
+          var buttonContents = '<button class="btn btn-info btn-sm edit-btn" style="color:white"><i class="fa fa-pencil-square-o"></i></button>';
+          if (thisref.loginForm.get('username').value == 'vaibhav@hpym.com') {
+            buttonContents = '<button class="btn btn-danger btn-sm delete-btn"><i class="fa fa-trash"></i></button> ' + buttonContents;
+          }
+          columnDefs.push({
             targets: 1,
             data: null,
-            defaultContent: '<button class="btn btn-danger btn-sm delete-btn"><i class="fa fa-trash"></i></button>',
-          }) : '';
+            defaultContent: buttonContents,
+          },
+            // {
+            //   targets: 2,
+            //   data: 'seva',
+            //   "render": function (data, type, row, meta) {
+            //     return '<input disabled type="number" min="0" max="1200" class="form-control seva-box" value="' + data + '"/>';
+            //   }
+            //   // defaultContent: '<input type="number" value="'++'"',
+            // }
+          );
+
+          // excel seva column
+          var buttonCommon = {
+            exportOptions: {
+              format: {
+                body: function (data, row, column, node) {
+                  // Strip $ from salary column to make it numeric
+                  // debugger
+                  if (column === 1) {
+                    return '';
+                  }
+                  else if (column === 2) {
+                    var inputId = $(data).attr('id');
+                    debugger
+                    // return Number.parseInt($('#'+inputId).val())
+                    return Number.parseInt($(data).val())
+                  }
+                  else if (column === 3) {
+                    return ($(data).val())
+                  }
+
+                  return data;
+                }
+              }
+            }
+          };
+
+
           var table = $("#tableName").DataTable({
             "autoWidth": true,
             scrollX: true,
-            dom: 'Blfrtip',
-            buttons: [
-              {
-                extend: 'excel',
-                split: ['copy', 'csv', 'pdf', 'print']
-              }
-            ],
+            dom: 'lfrtip',
+            scrollCollapse: true,
+            fixedColumns: {
+              // left: 1,
+              right: 1
+            },
+            // buttons: [
+            //   $.extend(true, {}, buttonCommon, {
+            //     extend: 'excelHtml5'
+            //   }),
+            //   $.extend(true, {}, buttonCommon, {
+            //     extend: 'print'
+            //   }),
+            //   // {
+            //   //   extend: null,
+            //   //   split: ['copy', 'csv', 'pdf', 'print']
+            //   // }
+            // ],
             columnDefs: columnDefs
 
             // { visible: false, targets: [3] } // hide from UI but not in Excel
@@ -87,22 +172,20 @@ export class RegListComponent implements OnInit {
 
           $('#tableName tbody').on('click', 'button.delete-btn', function () {
             var data = table.row($(this).parents('tr')).data();
-            thisref.UnRegisterMember(data[3], data[9], data[2])
+            thisref.UnRegisterMember(data[5], data[11], data[4]);
+            $(this).off('click');
           });
 
-          //       table.buttons().container()
-          // .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
-        });          // info: false,
-        // searching: false,
-        // paging: true,
-        // bFilter: false,
-        // bInfo: false,
-        // 'dom': 'Rlfrtip',
-        // 'colReorder': {
-        //   'allowReorder': false
-        // },
-        // order: [[2, "asc"]]
-        // });
+          $('#tableName tbody').on('click', 'button.edit-btn', function () {
+            // var data = table.row($(this).parents('tr')).data();
+            var dis = $(this).closest('td').siblings().find('.seva-box')[0].disabled;
+            $(this).closest('td').siblings().find('.seva-box')[0].disabled = !dis;
+            $(this).off('click');
+          });
+
+
+        });
+
       },
       err => {
         this.loading = false;
@@ -126,7 +209,7 @@ export class RegListComponent implements OnInit {
       $("#tableName").DataTable().destroy();
       this.getAllRegs();
       this.toDeleteData = null;
-      this.loading = false
+      // this.loading = false
 
       this.confirmModal.hide();
     },
@@ -138,11 +221,41 @@ export class RegListComponent implements OnInit {
       })
   }
 
+  updateTransport(transport, id) {
+    console.log(transport, id);
+    this.loading = true;
+    this.service.updateTransport({ id, transport }).subscribe(res => {
+      this.loading = false;
+    },
+      err => {
+        alert('Update Error! Try again later')
+        this.loading = false;
+      })
+  }
+
+  updateSeva(amount, mobile) {
+    this.loading = true;
+    var d = this.source.find(s => s.sampark['Mobile'] == mobile);
+    console.log(d);
+    this.service.updateSeva({ id: d._id, seva: amount }).subscribe(res => {
+      this.loading = false;
+      // $('.mobile_no:contains("' + mobile + '")').closest('td').prev().prev().find('.seva-box')[0].disabled = true
+      $('.mobile_no:contains("' + mobile + '")').closest('tr').find('.seva-box')[0].disabled = true
+    },
+      err => {
+        alert('Update Error! Try again later')
+        this.loading = false;
+      })
+  }
+
   // Login
   onLogin() {
     if (this.loginForm.valid) {
       var loginData = this.loginForm.value;
-      var u = users.find(s => s.emailId == loginData.username && s.password == loginData.password);
+      var u: any = [];
+
+      u = users.find(s => s.emailId == loginData.username && s.password == loginData.password);
+
       if (u) {
         this.loginModal.hide();
         this.getAllRegs();

@@ -38,4 +38,14 @@ regsController.deRegisterMember = async (req, res) => {
     responseHelper.sendResponse(response)
 }
 
+regsController.updateSeva = async (req, res) => {
+    var response = await regsService.updateSeva(req, res);
+    responseHelper.sendResponse(response)
+}
+
+regsController.updateTransport = async (req, res) => {
+    var response = await regsService.updateTransport(req, res);
+    responseHelper.sendResponse(response)
+}
+
 module.exports = regsController;

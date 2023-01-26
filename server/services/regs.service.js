@@ -162,6 +162,25 @@ regsService.getAll = async (req, res) => {
                         'sampark.Joining Date': 1,
                         'sampark.Birth Date': 1
                     }
+                }, {
+                    '$lookup': {
+                        'from': 'ssl_2022_registerations',
+                        'localField': 'sampark.Mobile',
+                        'foreignField': 'mobileNo',
+                        'as': 'sslData'
+                    }
+                }, {
+                    '$project': {
+                        'transport': 1,
+                        'isNew': 1,
+                        'seva': 1,
+                        '_id': 1,
+                        'createdAt': 1,
+                        'sampark': 1,
+                        'sslRegistered': {
+                            '$size': '$sslData'
+                        }
+                    }
                 }
             ]
         ).sort({ createdAt: 1 }).exec()
@@ -182,6 +201,8 @@ regsService.getSabhaList = async (req, res) => {
     }
 }
 
+
+
 regsService.deRegisterMember = async (req, res) => {
     try {
         var samparkId;
@@ -201,6 +222,67 @@ regsService.deRegisterMember = async (req, res) => {
         return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
     }
 }
+
+
+regsService.updateSeva = async (req, res) => {
+    try {
+        if (isNaN(Number.parseInt(req.body.seva))) {
+            return { statusCode: 400, message: 'Invalid Seva', data: '', res }
+        }
+        var resp = await registerationModel.updateOne({ _id: mongoose.Types.ObjectId(req.body.id) }, { $set: { 'seva': req.body.seva } })
+        return { statusCode: 200, message: 'Seva Updated', data: resp, res }
+    } catch (e) {
+        return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
+    }
+}
+
+regsService.updateTransport = async (req, res) => {
+    try {
+        var resp = await registerationModel.updateOne({ _id: mongoose.Types.ObjectId(req.body.id) }, { $set: { 'transport': req.body.transport } })
+        return { statusCode: 200, message: 'Transport Updated', data: resp, res }
+    } catch (e) {
+        return { statusCode: 500, message: 'Internal Server Error', data: '', res, error: e }
+    }
+}
+
+// samparkSchema.aggregate(
+//     [
+//         {
+//             '$group': {
+//                 '_id': {
+//                     'name': '$Full Name',
+//                     'sabha': '$Sabha'
+//                 },
+//                 'total': {
+//                     '$sum': 1
+//                 }
+//             }
+//         }, {
+//             '$match': {
+//                 '_id': {
+//                     '$ne': null
+//                 },
+//                 'total': {
+//                     '$gt': 1
+//                 }
+//             }
+//         }, {
+//             '$project': {
+//                 'name': '$_id',
+//                 'total': 1,
+//                 '_id': 0
+//             }
+//         }
+//     ]).exec().then(async d => {
+//         console.log(d.filter(dd => dd.total > 1).length);
+//         for (const user of d) {
+//             var sam = await samparkSchema.find({ 'Full Name': user.name.name.trim() }, { 'Full Name': 1, 'Mobile': 1, 'Sabha': 1, 'In Groups': 1 })
+//             var ingroup = sam.find(s => s['In Groups'] == 'HPYM2023_NEW');
+//             if (ingroup) {
+//                 console.log(sam);
+//             }
+//         }
+//     })
 
 // registerationModel.aggregate([
 //     {
@@ -251,7 +333,7 @@ regsService.deRegisterMember = async (req, res) => {
 
 // })
 
-// Delete starting with 0 || 11 digit number check
+// //Delete starting with 0 || 11 digit number check
 // samparkSchema.find({
 //     'Mobile': { $exists: true }, 'In Groups': 'HPYM2023_NEW',
 //     $expr: { $gt: [{ $strLenCP: '$Mobile' }, 10] }
@@ -303,11 +385,10 @@ regsService.deRegisterMember = async (req, res) => {
 //     console.log('duplicate mobile new', news);
 
 
-//     // for (const data of s) {
-//     //     samparkSchema.find data[0]
-//     // }
 // })
 
+
+//move new to old in regs table
 // registerationModel.aggregate([
 //     {
 //         '$lookup': {
@@ -330,17 +411,84 @@ regsService.deRegisterMember = async (req, res) => {
 //     // console.log('update d ', res);
 // })
 
+var xlsx = require('node-xlsx');
+var fs = require('fs');
+var mongoXlsx = require('mongo-xlsx');
+
+// // Find Duplicate by names to excel
+// samparkSchema.find({
+//     // $and: [
+//     //     {'First Name':{'$regex' : 'yash', '$options' : 'i'}},{'Middle Name':{'$regex' : 'suresh', '$options' : 'i'}},{'Last Name':{'$regex' : 'soni', '$options' : 'i'}}
+//     //     // ,{'Sabha'}
+//     // ]
+// }).skip().exec().then(data => {
+//     console.log(data.length);
+//     /* Generate automatic model for processing (A static model should be used) */
+//     var model = [
+//         {
+//             "displayName": "User Identifier",
+//             "access": "id",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "First Name",
+//             "access": "First Name",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "Middle Name",
+//             "access": "Middle Name",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "Last Name",
+//             "access": "Last Name",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "Full Name",
+//             "access": "Full Name",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "Mobile",
+//             "access": "Mobile",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "Sabha",
+//             "access": "Sabha",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "Birth Date",
+//             "access": "Birth Date",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "In Groups",
+//             "access": "In Groups",
+//             "type": "string"
+//           },
+//           {
+//             "displayName": "Gender",
+//             "access": "Gender",
+//             "type": "string"
+//           }
+//     ]
+
+//     /* Generate Excel */
+//     mongoXlsx.mongoData2Xlsx(data, model,{path:'./'}, function (err, data) {
+//         console.log(err);
+//         console.log('File saved ');
+//     });
+
+// })
 
 
+const excelToDB = async () => {
 
-// .sort({ createdAt: -1 })
-//             .skip(req.params.skip)
-//             .limit(req.params.take).exec();
-
-const excelToDB = () => {
-    var xlsx = require('node-xlsx');
-
-    var obj = xlsx.parse('./sym.xlsx'); // parses a file
+    var obj = xlsx.parse('./sym_dump_22_12_22.xlsx'); // parses a file
     // console.log(obj[0].data[0]);
     var keys = obj[0].data.shift();
     let memberobj = keys.reduce(function (acc, curr) {
@@ -362,9 +510,21 @@ const excelToDB = () => {
         jsonMembers.push(obj);
     }
 
-    // console.log(jsonMembers);
+    console.log(jsonMembers.length);
 
-    // reg.insertMany(jsonMembers);
+    var newcount = 0;
+    // for (const mem of jsonMembers) {
+
+    //     var existing = await samparkSchema.findOne({ 'Member Id': mem['Member Id'], 'In Groups': { $ne: 'HPYM2023_NEW' } });
+    //     if (!existing) {
+    //         await samparkSchema.create(mem);
+    //         newcount++;
+    //         console.log("New Entry : " + mem['Full Name'] + " Mandal: " + mem["Sabha"]);
+    //     }
+    // }
+    // console.log('New Entries: ' + newcount);
+    // samparkSchema.insertMany(jsonMembers);
 }
 
+// excelToDB()
 module.exports = regsService;

@@ -16,6 +16,23 @@ export class AdminService {
   }
 
   deRegisterMember(body) {
-    return this.http.post(this.url + '/regs/remove',body);
+    return this.http.post(this.url + '/regs/remove', body);
+  }
+
+  updateSeva(body) {
+    return this.http.put(this.url + '/regs/seva',body)
+  }
+
+  updateTransport(body) {
+    return this.http.put(this.url + '/regs/transport',body)
+  }
+
+  // dash
+  dashMandalWise() {
+    return this.http.get(this.url + '/dashboard/mandalWise');
+  }
+
+  dashMandalBus() {
+    return this.http.get(this.url + '/dashboard/mandalBus');
   }
 }

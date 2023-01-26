@@ -1,40 +1,51 @@
 <app-spinner *ngIf="loading"></app-spinner>
 <div class="mt-3 row w-100">
     <div class="col-12">
+
         <h5>Registerations</h5>
         <div class="card">
             <div class="card-body">
+                <button class="btn btn-outline-success mb-3" (click)="exportexcel()">Export Excel</button>
                 <table class="table table-bordered table-striped table-hover" id="tableName" style="width: 100%;">
                     <thead>
                         <tr>
                             <th></th>
-                            <th *ngIf="loginForm.get('username').value == 'vaibhav@hpym.com'">Action</th>
+                            <th>Action</th>
+                            <th>Seva</th>
+                            <th>Transport</th>
                             <th>Full Name</th>
                             <th>Mobile No</th>
                             <th>Age</th>
                             <th>Gender</th>
                             <th>Ref Name</th>
-                            <th>FollowUp Name</th>
+                            <th>FollowUp</th>
                             <th>Sabha</th>
-                            <th>Is New</th>
-                            <th>Transport</th>
-                            <th>Seva</th>
+                            <th>New</th>
+                            <th>SSL</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let m of source;let i = index">
                             <td>{{i+1}}</td>
-                            <td *ngIf="loginForm.get('username').value == 'vaibhav@hpym.com'"></td>
-                            <td>{{m.sampark['First Name'] + ' ' + m.sampark['Middle Name'] + ' ' + m.sampark['Last Name']}}</td>
-                            <td>{{m.sampark['Mobile']}}</td>
+                            <td></td>
+                            <td width="25px"><input [attr.data-box]="'seva-box'" [id]="'seva'+i" type="number" disabled
+                                    class="form-control form-control-sm seva-box" [(value)]="m.seva" [(ngModel)]="m.seva"
+                                    (focusout)="updateSeva(m.seva,m.sampark['Mobile'])" /></td>
+                            <td><select class="form-select form-select-sm" (change)="updateTransport(m.transport,m._id)"
+                                    [(ngModel)]="m.transport">
+                                    <option value="Bus">Bus</option>
+                                    <option value="Self">Self</option>
+                                </select></td>
+                            <td>{{m.sampark['First Name'] + ' ' + m.sampark['Middle Name'] + ' ' + m.sampark['Last
+                                Name']}}</td>
+                            <td class="mobile_no">{{m.sampark['Mobile']}}</td>
                             <td>{{calculateAge(m.sampark['Birth Date'])}}</td>
                             <td>{{m.sampark['Gender']}}</td>
                             <td>{{m.sampark['Ref Name'] ? m.sampark['Ref Name'] : 'NONE'}}</td>
                             <td>{{m.sampark['FollowUp Name'] ? m.sampark['FollowUp Name'] : 'NONE'}}</td>
                             <td>{{m.sampark['Sabha']}}</td>
                             <td>{{m['isNew'] == true ? 'Yes' : 'No'}}</td>
-                            <td>{{m['transport']}}</td>
-                            <td>{{m['seva']}}</td>
+                            <td>{{m['sslRegistered'] == 0 ? 'No' : 'Yes'}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -78,17 +89,18 @@
                 <form [formGroup]="loginForm">
                     <div class="mb-3">
                         <label for="username" class="form-label">Email Id</label>
-                        <input type="text" formControlName="username" class="form-control" autocomplete="off" id="username" placeholder="Enter your mail id">
-                      </div>
-                      <div class="mb-3">
+                        <input type="text" formControlName="username" class="form-control" autocomplete="off"
+                            id="username" placeholder="Enter your mail id">
+                    </div>
+                    <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" formControlName="password" class="form-control" autocomplete="off" id="password" placeholder="Enter your password">
-                      </div>
+                        <input type="password" formControlName="password" class="form-control" autocomplete="off"
+                            id="password" placeholder="Enter your password">
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button"
-                    class="btn btn-primary" [disabled]="loginForm.invalid" (click)="onLogin()">
+                <button type="button" class="btn btn-primary" [disabled]="loginForm.invalid" (click)="onLogin()">
                     Login</button>
             </div>
         </div>

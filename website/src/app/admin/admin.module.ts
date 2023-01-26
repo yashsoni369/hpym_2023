@@ -10,12 +10,14 @@ import { LoginComponent } from './components/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '../shared/shared.module';
+import { RegTransportComponent } from './components/reg-transport/reg-transport.component';
 @NgModule({
   declarations: [
     AdminComponent,
     RegListComponent,
     RegDashboardComponent,
-    LoginComponent
+    LoginComponent,
+    RegTransportComponent
   ],
   imports: [
     CommonModule,

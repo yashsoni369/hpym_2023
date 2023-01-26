@@ -8,7 +8,6 @@ module.exports = router => {
     router.get('/regs', regsController.getAll);
     router.get('/regs/sabhaList', regsController.getSabhaList);
     router.post('/regs/remove', regsController.deRegisterMember);
-    // router.get('/regs/registerations', regsController.getRegisterations);
-    // router.get('/regs/dashboard', regsController.getDashboard);
-    // router.post('/regs/removePlayer', regsController.removePlayer);
+    router.put('/regs/seva', regsController.updateSeva);
+    router.put('/regs/transport', regsController.updateTransport);
 }
